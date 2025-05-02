@@ -7,8 +7,8 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 struct FullRecord {
-    #[serde(rename = "Museum ID")]
-    museum_id: Option<i64>,
+    //#[serde(rename = "Museum ID")]
+    //museum_id: Option<i64>,
     //#[serde(rename = "Museum Name")]
     //museum_name: Option<String>,
     #[serde(rename = "Museum Type")]
@@ -20,24 +20,23 @@ struct FullRecord {
     #[serde(rename = "Region Code (AAM)")]
     region_code: Option<i8>,
     #[serde(rename = "Revenue")]
-    revenue: Option<i64>,
+    revenue: Option<usize>,
 }
+
 
 #[derive(Debug, Clone)]
 pub struct Row {
-    pub museum_id: i64,
+    //pub museum_id: i64,
     //pub museum_name: String,
     pub museum_type: i8,
     pub locale: i8,
     pub state_code: i8,
     pub region_code: i8,
-    pub revenue: i64,
+    pub revenue: usize,
 }
 
 impl Row {
-    pub fn new(id: i64, 
-        //name: String, 
-        a: String, b: i8, c: i8, d: i8, e: i64) -> Self {
+    pub fn new(a: String, b: i8, c: i8, d: i8, e: usize) -> Self {
         let type_code = match a.as_str() {
             "HISTORIC PRESERVATION" => 1,
             "GENERAL MUSEUM" => 2,
@@ -47,8 +46,6 @@ impl Row {
             _ => 0,
         };
         Self {
-            museum_id: id,
-            //museum_name: name,
             museum_type: type_code,
             locale: b,
             state_code: c,
@@ -71,15 +68,14 @@ pub fn load(filename: &str) -> Result<Vec<Row>, Box<dyn Error>> {
 
         if let Some(revenue) = record.revenue {
             // Handle missing fields (if necessary, use default values or skip)
-            if record.museum_id.is_some() &&
+            if //record.museum_id.is_some() &&
                //record.museum_name.is_some() &&
                record.museum_type.is_some() &&
                record.locale.is_some() &&
                record.state_code.is_some() &&
                record.region_code.is_some() {
                 let row = Row::new(
-                    record.museum_id.unwrap(),
-                    //record.museum_name.unwrap(),
+                    //record.museum_id.unwrap(),
                     record.museum_type.unwrap(),
                     record.locale.unwrap(),
                     record.state_code.unwrap(),
