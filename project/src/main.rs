@@ -1,10 +1,16 @@
+//! Main module for the ABDS210 Final Project.
+//! This module processes museum data to predict revenue ranges using a supervised machine learning model.
+
+
 use ndarray::{Array2, Array, ArrayView1, array};
 use linfa_trees::DecisionTree;
 use linfa::prelude::*;
 
 use libs::*;
 
-//making a fn to put data in form (array) to predict revenue
+//puts data in form (array) to predict revenue using decision tree model
+//input: museum type, locale, state, region codes as they would appear in the dataset
+//output: array that can be used by the decision tree to predict revenue
 fn data_to_predict(mtype: String, m_locale: i8, m_state: i8, m_region: i8) -> Array2<f32> {
   let type_code = match mtype.as_str() {
     "HISTORIC PRESERVATION" => 1,
@@ -17,6 +23,9 @@ fn data_to_predict(mtype: String, m_locale: i8, m_state: i8, m_region: i8) -> Ar
   return new
 }
 
+//formats the prediction from the model to an understandable sentence with the predicted revenue range
+//inputs: fences vector (the determined discrete revenue categories), predicted_class: outcome of decision tree prediction
+//output: string to be read in the terminal
 fn format_categories(fences: &Vec<f64>, predicted_class: ArrayView1<usize>) -> String {
   let cat_index = predicted_class[0];
   if cat_index == 0 {
