@@ -1,8 +1,14 @@
 //! makes revenue a discrete variable from a continuous variable
 
+//the categorize function turns revenue, a continuous variable, to a discrete variable by specifying bins (like a histogram)
+//for each revenue in the data, putting that number through the categorize function will assign it to a bin
+//inputs: revenue (just one datapoint), fences vector which defines the bins
+//output: revenue category (the number it outputs is the upper bound of the bin)
 pub fn categorize(money: f64, fences: &Vec<f64>) -> usize {
+    //sort the fences vector using partial_cmp as the fences are f64 values, this accounts for situations where the fences are not in order
     let mut sorted_fences = fences.clone();
     sorted_fences.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    // loop through the fences to find where the input lies, should return one more than the last index if the value is greater than the largest fence/bound
     for i in 0..fences.len() {
         if money < sorted_fences[i] {
             return i;
