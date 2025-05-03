@@ -60,7 +60,7 @@ impl Row {
 //the load function is used to read a csv file, convert it into a vector of Rows
 //input: name of the csv file
 //output: either Ok(vector of Row instances) or Err
-pub fn load(filename: &str) -> Result<Vec<Row>, Err> {
+pub fn load(filename: &str) -> Result<Vec<Row>, Box<dyn Error>> {
     //uses std::File crate to open and read csv, csv and serde have been added to Cargo.toml to read, deserialize the csv
     let file = File::open(filename)?;
     let mut rdr = ReaderBuilder::new()
@@ -92,4 +92,10 @@ pub fn load(filename: &str) -> Result<Vec<Row>, Err> {
         }
     } println!("{:?} converted to {:?} rows", filename, filtered_data.len());
     Ok(filtered_data)
+}
+
+#[test]
+fn test_error() {
+    let result = load("notafile.csv");
+    assert!(result.is_err(), "Expected error when loading a non-existent file");
 }
