@@ -1,5 +1,3 @@
-//mod dataframe;
-
 pub mod loading_data;
 
-//mod tests;
+pub mod categorize_rev;

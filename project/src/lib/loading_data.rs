@@ -20,7 +20,7 @@ struct FullRecord {
     #[serde(rename = "Region Code (AAM)")]
     region_code: Option<i8>,
     #[serde(rename = "Revenue")]
-    revenue: Option<usize>,
+    revenue: Option<f64>,
 }
 
 
@@ -32,11 +32,11 @@ pub struct Row {
     pub locale: i8,
     pub state_code: i8,
     pub region_code: i8,
-    pub revenue: usize,
+    pub revenue: f64,
 }
 
 impl Row {
-    pub fn new(a: String, b: i8, c: i8, d: i8, e: usize) -> Self {
+    pub fn new(a: String, b: i8, c: i8, d: i8, e: f64) -> Self {
         let type_code = match a.as_str() {
             "HISTORIC PRESERVATION" => 1,
             "GENERAL MUSEUM" => 2,
