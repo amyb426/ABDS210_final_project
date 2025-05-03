@@ -9,7 +9,10 @@ use linfa::prelude::*;
 use libs::*;
 
 //puts data in form (array) to predict revenue using decision tree model
-//input: museum type, locale, state, region codes as they would appear in the dataset
+//input: museum type, locale, state, region codes as they would appear in the dataset. 
+//The location demographics are already in numbered categories 
+//(and we can find the keys online as the dataset states the numbering systems it uses)
+//The museum type must be converted to numbered categories
 //output: array that can be used by the decision tree to predict revenue
 fn data_to_predict(mtype: String, m_locale: i8, m_state: i8, m_region: i8) -> Array2<f32> {
   let type_code = match mtype.as_str() {
@@ -45,7 +48,7 @@ fn main() {
   };
   let mut nums: Vec<f32> = Vec::new();
   let mut rev: Vec<f64>= Vec::new();
-  
+  //getting data ready to be put into arrays (from vectors) which will be made into a Dataset (from linfa crate)
   for row in &filtered {
     nums.push(row.museum_type as f32);
     nums.push(row.locale as f32);
@@ -62,16 +65,19 @@ fn main() {
   }
 
   let array1 = Array::from_vec(revenue_cats);
-  let array3 = Array2::from_shape_vec((filtered.len(), 4), nums).expect("Error creating ndarray");
-  let dataset = Dataset::new(array3, array1).with_feature_names(vec!["Museum Type", "Locale", "State", "Region"]);
-  
+  let array2 = Array2::from_shape_vec((filtered.len(), 4), nums).expect("Error creating ndarray");
+  //the revenue array is the targets
+  let dataset = Dataset::new(array2, array1).with_feature_names(vec!["Museum Type", "Locale", "State", "Region"]);
+  //decision tree from linfa crate - supervised mla
   let decision_tree = DecisionTree::params().max_depth(Some(4)).fit(&dataset).unwrap();
-
+  //calculate accuracy with confusion matrix
   let accuracy = decision_tree.predict(&dataset).confusion_matrix(&dataset).unwrap().accuracy();
-    
   println!("The accuracy is: {:?}", accuracy);
 
-  let ahm = data_to_predict("HISTORIC PRESERVATION".to_string(), 1, 2, 6); //predicting revenue for ALASKA HISTORICAL MUSEUM
+
+  //taking data from the kaggel file that is missing revenue and trying to predict the revenue:
+  //predicting revenue for ALASKA HISTORICAL MUSEUM
+  let ahm = data_to_predict("HISTORIC PRESERVATION".to_string(), 1, 2, 6); 
   let prediction1 = decision_tree.predict(&ahm);
   let predicted_class1 = prediction1.as_targets();
   println!("{}", format_categories(&fences, predicted_class1.view()));
