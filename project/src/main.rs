@@ -8,12 +8,12 @@ use linfa::prelude::*;
 
 use libs::*;
 
-//puts data in form (array) to predict revenue using decision tree model
-//input: museum type, locale, state, region codes as they would appear in the dataset. 
-//The location demographics are already in numbered categories 
-//(and we can find the keys online as the dataset states the numbering systems it uses)
-//The museum type must be converted to numbered categories
-//output: array that can be used by the decision tree to predict revenue
+///data_to_predict() puts data in form (array) to predict revenue using decision tree model
+///input: museum type, locale, state, region codes as they would appear in the dataset. 
+///The location demographics are already in numbered categories 
+///(and we can find the keys online as the dataset states the numbering systems it uses)
+///The museum type must be converted to numbered categories
+///output: array that can be used by the decision tree to predict revenue
 fn data_to_predict(mtype: String, m_locale: i8, m_state: i8, m_region: i8) -> Array2<f32> {
   let type_code = match mtype.as_str() {
     "HISTORIC PRESERVATION" => 1,
@@ -26,9 +26,9 @@ fn data_to_predict(mtype: String, m_locale: i8, m_state: i8, m_region: i8) -> Ar
   return new
 }
 
-//formats the prediction from the model to an understandable sentence with the predicted revenue range
-//inputs: fences vector (the determined discrete revenue categories), predicted_class: outcome of decision tree prediction
-//output: string to be read in the terminal
+///formats the prediction from the model to an understandable sentence with the predicted revenue range
+///inputs: fences vector (the determined discrete revenue categories), predicted_class: outcome of decision tree prediction
+///output: string to be read in the terminal
 fn format_categories(fences: &Vec<f64>, predicted_class: ArrayView1<usize>) -> String {
   let cat_index = predicted_class[0];
   if cat_index == 0 {
@@ -42,6 +42,7 @@ fn format_categories(fences: &Vec<f64>, predicted_class: ArrayView1<usize>) -> S
 
 fn main() {
   //read the csv, get the data and make it usable, create a decision tree
+  //the loading_data module is utilized here
   let mut filtered: Vec<libs::loading_data::Row> = Vec::new();
   if let Ok(filtered_rows) = loading_data::load("museums.csv") {
       filtered = filtered_rows;
@@ -57,7 +58,8 @@ fn main() {
     rev.push(row.revenue);
   };
 
-  //putting the revenue into discrete categories, I experimented with different fences
+  // putting the revenue into discrete categories, I experimented with different fences
+  // the categorize_rev module is utilized here 
   let fences = vec![0.0, 1000.0, 10000.0, 100000.0, 1000000.0, 1000000000.0];
   let mut revenue_cats: Vec<usize> = Vec::new();
   for elem in rev {
@@ -75,8 +77,8 @@ fn main() {
   println!("The accuracy is: {:?}", accuracy);
 
 
-  //taking data from the kaggel file that is missing revenue and trying to predict the revenue:
-  //predicting revenue for ALASKA HISTORICAL MUSEUM
+  //taking data from the kaggel file that are missing revenue and using the model to try to predict the revenue:
+  //predict revenue for ALASKA HISTORICAL MUSEUM
   let ahm = data_to_predict("HISTORIC PRESERVATION".to_string(), 1, 2, 6); 
   let prediction1 = decision_tree.predict(&ahm);
   let predicted_class1 = prediction1.as_targets();
