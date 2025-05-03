@@ -7,10 +7,6 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 struct FullRecord {
-    //#[serde(rename = "Museum ID")]
-    //museum_id: Option<i64>,
-    //#[serde(rename = "Museum Name")]
-    //museum_name: Option<String>,
     #[serde(rename = "Museum Type")]
     museum_type: Option<String>,
     #[serde(rename = "Locale Code (NCES)")]
@@ -26,8 +22,6 @@ struct FullRecord {
 
 #[derive(Debug, Clone)]
 pub struct Row {
-    //pub museum_id: i64,
-    //pub museum_name: String,
     pub museum_type: i8,
     pub locale: i8,
     pub state_code: i8,
@@ -67,15 +61,11 @@ pub fn load(filename: &str) -> Result<Vec<Row>, Box<dyn Error>> {
         let record: FullRecord = result?;
 
         if let Some(revenue) = record.revenue {
-            // Handle missing fields (if necessary, use default values or skip)
-            if //record.museum_id.is_some() &&
-               //record.museum_name.is_some() &&
-               record.museum_type.is_some() &&
+            if record.museum_type.is_some() &&
                record.locale.is_some() &&
                record.state_code.is_some() &&
                record.region_code.is_some() {
                 let row = Row::new(
-                    //record.museum_id.unwrap(),
                     record.museum_type.unwrap(),
                     record.locale.unwrap(),
                     record.state_code.unwrap(),
