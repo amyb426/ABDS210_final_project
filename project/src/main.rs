@@ -17,16 +17,14 @@ fn data_to_predict(mtype: String, m_locale: i8, m_state: i8, m_region: i8) -> Ar
   return new
 }
 
-fn format_categories(fences: &Vec<f64>, predicted_class: ArrayView1<usize>) {
+fn format_categories(fences: &Vec<f64>, predicted_class: ArrayView1<usize>) -> String {
   let cat_index = predicted_class[0];
-  if cat_index + 1 < fences.len() {
-    println!(
-        "Predicted revenue range: ${} - ${}",
-        fences[cat_index],
-        fences[cat_index + 1]
-    );
+  if cat_index == 0 {
+    format!("Predicted revenue range: < ${}", fences[cat_index])
+  } else if cat_index < fences.len() {
+    format!("Predicted revenue range: ${} - ${}", fences[cat_index-1], fences[cat_index])
   } else {
-    println!("Predicted revenue range is out of bounds!");
+    format!("Predicted revenue range: > ${}", fences[cat_index - 1])
   }
 }
 
@@ -67,18 +65,37 @@ fn main() {
   let ahm = data_to_predict("HISTORIC PRESERVATION".to_string(), 1, 2, 6); //predicting revenue for ALASKA HISTORICAL MUSEUM
   let prediction1 = decision_tree.predict(&ahm);
   let predicted_class1 = prediction1.as_targets();
-  format_categories(&fences, predicted_class1.view());
+  println!("{}", format_categories(&fences, predicted_class1.view()));
 
   //predict revenue for BARBER VINTAGE MOTORSPORT MUSEUM
   let bvmm = data_to_predict("GENERAL MUSEUM".to_string(), 4,1,3);
   let prediction2 = decision_tree.predict(&bvmm);
   let predicted_class2 = prediction2.as_targets();
-  format_categories(&fences, predicted_class2.view());
+  println!("{}", format_categories(&fences, predicted_class2.view()));
 
   //predict revenue for COOKS NATURAL SCIENCE MUSEUM
   let cnsm = data_to_predict("SCIENCE & TECHNOLOGY MUSEUM OR PLANETARIUM".to_string(), 1,1,3);
   let prediction3 = decision_tree.predict(&cnsm);
   let predicted_class3 = prediction3.as_targets();
-  format_categories(&fences, predicted_class3.view());
+  println!("{}", format_categories(&fences, predicted_class3.view()));
 }
 
+#[test]
+fn test_index_rev() {
+  let test_fences = vec![0.0,10.0,20.0,30.0];
+  let arraya = Array::from(vec![0]);
+  let a: ArrayView1<usize> = arraya.view();
+  let arrayb = Array::from(vec![1]);
+  let b: ArrayView1<usize> = arrayb.view();
+  let arrayc = Array::from(vec![2]);
+  let c: ArrayView1<usize> = arrayc.view();
+  let arrayd = Array::from(vec![3]);
+  let d: ArrayView1<usize> = arrayd.view();
+  let arraye = Array::from(vec![4]);
+  let e: ArrayView1<usize> = arraye.view();
+  assert_eq!(format_categories(&test_fences, a), String::from("Predicted revenue range: < $0"));
+  assert_eq!(format_categories(&test_fences, b), String::from("Predicted revenue range: $0 - $10"));
+  assert_eq!(format_categories(&test_fences, c), String::from("Predicted revenue range: $10 - $20"));
+  assert_eq!(format_categories(&test_fences, d), String::from("Predicted revenue range: $20 - $30"));
+  assert_eq!(format_categories(&test_fences, e), String::from("Predicted revenue range: > $30"));
+}

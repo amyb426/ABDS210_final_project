@@ -14,6 +14,7 @@ pub fn categorize(money: f64, fences: &Vec<f64>) -> usize {
     } return usize::MAX //if something goes wrong
 }
 
+
 #[test]
 fn test_unordered_fences() {
     let fences = vec![100.0, 200.0, 150.0];
@@ -25,4 +26,22 @@ fn test_unordered_fences() {
     let b = categorize(money, &sorted);
     
     assert_eq!(a,b,"fences should be sorted");
+}
+
+#[test]
+fn test_categorize_revenue() {
+    let fences = vec![0.0, 1000.0, 10000.0, 100000.0, 1000000.0, 1000000000.0];
+
+    assert_eq!(categorize(-10.0, &fences), 0);
+    assert_eq!(categorize(0.0, &fences), 1);
+    assert_eq!(categorize(999.99, &fences), 1);
+    assert_eq!(categorize(1000.0, &fences), 2);
+    assert_eq!(categorize(9999.99, &fences), 2);
+    assert_eq!(categorize(10000.0, &fences), 3);
+    assert_eq!(categorize(99999.99, &fences), 3);
+    assert_eq!(categorize(100000.0, &fences), 4);
+    assert_eq!(categorize(999999.99, &fences), 4);
+    assert_eq!(categorize(1000000.0, &fences), 5);
+    assert_eq!(categorize(999999999.99, &fences), 5);
+    assert_eq!(categorize(1000000000.0, &fences), 6);
 }
