@@ -31,7 +31,7 @@ fn test_unordered_fences() {
     sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
     let b = categorize(money, &sorted);
     
-    assert_eq!(a,b,"fences should be sorted");
+    assert_eq!(a,b,"the fn did not sort fences before performing categorization");
 }
 
 #[test]
